@@ -20,7 +20,6 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 
 # Create your views here.
 
-@login_required
 class HomeView(View):
     def get(self, *args, **kwargs):
         try:
