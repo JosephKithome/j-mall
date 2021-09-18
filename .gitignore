@@ -12,3 +12,4 @@ media
 !.travis.yml
 /.env
 /.vscode
+*.migrations
