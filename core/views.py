@@ -21,15 +21,15 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 # Create your views here.
 
 
-class HomeView(View):
+class HomeView(LoginRequiredMixin,View):
     def get(self, *args, **kwargs):
         try:
             items = Item.objects.all()
-            # order = Order.objects.get(user=self.request.user, ordered=False)
+            order = Order.objects.get(user=self.request.user, ordered=False)
 
             context = {
                 'object_list': items,
-                # 'object': order,
+                'object': order,
             }
             # print(order.items.count)
             return render(self.request, "index.html", context)
