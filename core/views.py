@@ -22,16 +22,18 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 
 class HomeView(View):
     def get(self, *args, **kwargs):
+        user = self.request.user
         try:
-            items = Item.objects.all()
-            order = Order.objects.get(user=self.request.user, ordered=False)
+            if user:
+                items = Item.objects.all()
+                order = Order.objects.get(user=self.request.user, ordered=False)
 
-            context = {
-                'object_list': items,
-                'object': order,
-            }
-            # print(order.items.count)
-            return render(self.request, "index.html", context)
+                context = {
+                    'object_list': items,
+                    'object': order,
+                }
+                # print(order.items.count)
+                return render(self.request, "index.html", context)    
         except ObjectDoesNotExist:
             return render(self.request, "index.html")
 
