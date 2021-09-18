@@ -1,0 +1,62 @@
+<div class="col-md-5 order-details">
+    <div class="section-title text-center">
+        <h3 class="title">Your Order</h3>
+    </div>
+    <div class="order-summary">
+        <div class="order-col">
+            <div><strong>PRODUCT</strong></div>
+            <div><strong>TOTAL</strong></div>
+
+        </div>
+        <span class="badge  badge-pill btn btn-success">{{ object.items.count }}</span>
+        {% for order_item in object.items.all %}
+        <div class="order-products">
+            <div class="order-col">
+                <div> {{order_item.quantity}} x {{order_item.item.title}}</div>
+                {% if order_item.item.discount_price %}
+                <div>{{ order_item.get_total_discount_item_price }}</div>
+                {% else %}
+                <div>{{ order_item.get_total_item_price }}</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        <!-- Promo code -->
+        <li class="list-group-item d-flex justify-content-between bg-light">
+            <div class="text-success">
+                <h6 class="my-0">Promo code</h6>
+                <small>{{object.coupon.code}}</small>
+            </div>
+            <span class="text-success">-Ksh{{object.coupon.amount}}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <span>Total (KSh)</span>
+            <strong>Ksh {{object.get_order_total|floatformat:2}}</strong>
+        </li>
+        {% if DISPLAY_COUPON_FORM %}
+        <form class="card p-2 pull-right" action="{% url 'core:add-coupon' %}" method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <!-- <input type="text" class="form-control" placeholder="Promo code" aria-label="Recipient's username"
+                    aria-describedby="basic-addon2"> -->
+                {{couponform.code}}
+                <div class="input-group-append">
+                    <button id="stripeBtn" class="py-2 pull-right mt-2 primary-btn order-submit"
+                        type="submit">Redeem</button>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+        <!-- Promo code -->
+        <!-- <div class="order-col">
+            <div>Shiping</div>
+            <div><strong>FREE</strong></div>
+        </div> -->
+        <div class="order-col">
+            <div><strong>TOTAL</strong></div>
+
+            {% if object.get_order_total %}
+            <div><strong class="order-total">Ksh {{object.get_order_total|floatformat:2}}</strong></div>
+            {% endif %}
+        </div>
+    </div>
