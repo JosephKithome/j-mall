@@ -29,7 +29,9 @@ class HomeView(View):
         # import pdb
         # pdb.set_trace()
         try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
+            if request.user:
+                order = Order.objects.get(user=self.request.user, ordered=False)
+            return None    
         except Order.DoesNotExist:
             return None    
 
