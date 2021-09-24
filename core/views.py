@@ -21,7 +21,7 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 # Create your views here.
 
 
-class HomeView(View):
+class HomeView(LoginRequiredMixin,View):
    
     def get(self, *args, **kwargs):
 
@@ -29,9 +29,7 @@ class HomeView(View):
         # import pdb
         # pdb.set_trace()
         try:
-            if request.user:
-                order = Order.objects.get(user=self.request.user, ordered=False)
-            return None    
+            order = Order.objects.get(user=self.request.user, ordered=False)
         except Order.DoesNotExist:
             return None    
 
