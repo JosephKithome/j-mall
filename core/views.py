@@ -22,19 +22,23 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 
 
 class HomeView(LoginRequiredMixin,View):
+   
     def get(self, *args, **kwargs):
-        try:
-            items = Item.objects.all()
-            order = Order.objects.get(user=self.request.user, ordered=False)
 
-            context = {
-                'object_list': items,
-                'object': order,
-            }
-            # print(order.items.count)
-            return render(self.request, "index.html", context)
-        except ObjectDoesNotExist:
-            return render(self.request, "index.html")
+        items = Item.objects.all()
+        # import pdb
+        # pdb.set_trace()
+        # order = Order.objects.get(user=self.request.user, ordered=False)
+
+        context = {
+            'product_list': items,
+            # 'object': order,
+        }
+        for item in items:
+            print(item)
+        # print(order.items.count)
+        return render(self.request, "index.html", context)
+    
 
 
 class ItemDetailView(DetailView):
