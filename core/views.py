@@ -21,18 +21,21 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 # Create your views here.
 
 
-class HomeView(LoginRequiredMixin,View):
+class HomeView(View):
    
     def get(self, *args, **kwargs):
 
         items = Item.objects.all()
         # import pdb
         # pdb.set_trace()
-        # order = Order.objects.get(user=self.request.user, ordered=False)
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+        except Order.DoesNotExist:
+            return None    
 
         context = {
             'product_list': items,
-            # 'object': order,
+            'object': order,
         }
         for item in items:
             print(item)

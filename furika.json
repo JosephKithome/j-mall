@@ -1,0 +1,44 @@
+[
+  {
+    "model": "core.item",
+    "pk": 1,
+    "fields": {
+      "title": "HP Refubised Folio 1030 G2 X360 7th Gen Core I7 16gb 512GB Ssd-13",
+      "price": 39499.0,
+      "discount_price": 32599.0,
+      "category": "LP",
+      "label": "S",
+      "slug": "hpelitebook",
+      "description": "One of the best in the market today.",
+      "imageUrl": "media/hp_EB87TO1.jpg"
+    }
+  },
+  {
+    "model": "core.item",
+    "pk": 2,
+    "fields": {
+      "title": "Samsung A31",
+      "price": 32899.0,
+      "discount_price": 27990.0,
+      "category": "P",
+      "label": "P",
+      "slug": "samsungA31",
+      "description": "One of the best",
+      "imageUrl": "media/sam_WLFoOCY.jpg"
+    }
+  },
+  {
+    "model": "core.item",
+    "pk": 3,
+    "fields": {
+      "title": "Apple Macbook Pro",
+      "price": 125999.0,
+      "discount_price": 113899.0,
+      "category": "LP",
+      "label": "D",
+      "slug": "macbook",
+      "description": "The rising star in the industry.",
+      "imageUrl": "media/apple.jpg"
+    }
+  }
+]
