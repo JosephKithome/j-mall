@@ -1,4 +1,4 @@
-
+This  is an ecommerce website built using django, covers user authentication,adding to cart,shipping and billing addresses,refunds,payments integration using stripe.
 ## Getting started
 
 Steps:
