@@ -20,29 +20,22 @@ stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 
 # Create your views here.
 
-
-class HomeView(LoginRequiredMixin,View):
+class HomeView(LoginRequiredMixin, View):
    
-    def get(self, *args, **kwargs):
-
+    def get(self, request, *args, **kwargs):
         items = Item.objects.all()
-        # import pdb
-        # pdb.set_trace()
+
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
         except Order.DoesNotExist:
-            return None    
+            order = None  # Instead of returning None, just set order to None
 
         context = {
             'product_list': items,
-            'object': order,
+            'object': order,  # This will be None if no order exists
         }
-        for item in items:
-            print(item)
-        # print(order.items.count)
-        return render(self.request, "index.html", context)
-    
 
+        return render(request, "index.html", context)
 
 class ItemDetailView(DetailView):
     model = Item
@@ -161,6 +154,127 @@ def is_valid_form(values):
 
 
 class CheckoutView(View):
+    def get(self, request, *args, **kwargs):
+        try:
+            form = CheckoutForm()
+            order = Order.objects.get(user=request.user, ordered=False)
+
+            context = {
+                'form': form,
+                'couponform': CouponForm(),
+                'object': order,
+                'DISPLAY_COUPON_FORM': True
+            }
+
+            # Get default shipping and billing addresses
+            context['default_shipping_address'] = Address.objects.filter(
+                user=request.user, address_type="S", default=True
+            ).first()
+
+            context['default_billing_address'] = Address.objects.filter(
+                user=request.user, address_type="B", default=True
+            ).first()
+
+            return render(request, 'checkout.html', context)
+        except ObjectDoesNotExist:
+            messages.error(request, "You do not have an active order")
+            return redirect('core:order-summary')
+
+    def post(self, request, *args, **kwargs):
+        form = CheckoutForm(request.POST)
+        try:
+            order = Order.objects.get(user=request.user, ordered=False)
+
+            if form.is_valid():
+                use_default_shipping = form.cleaned_data.get('use_default_shipping')
+                shipping_address = self.get_shipping_address(request, form, use_default_shipping)
+                
+                if not shipping_address:
+                    messages.error(request, "Please provide a valid shipping address.")
+                    return redirect("core:checkout")
+
+                order.shipping_address = shipping_address
+                order.save()
+
+                use_default_billing = form.cleaned_data.get('use_default_billing')
+                same_billing_address = form.cleaned_data.get('same_billing_address')
+                
+                billing_address = self.get_billing_address(request, form, use_default_billing, same_billing_address, shipping_address)
+                
+                if not billing_address:
+                    messages.error(request, "Please provide a valid billing address.")
+                    return redirect("core:checkout")
+                
+                order.billing_address = billing_address
+                order.save()
+
+                payment_option = form.cleaned_data.get('payment_option')
+                if payment_option == "S":
+                    return redirect('core:payment', payment_option='stripe')
+                elif payment_option == "P":
+                    return redirect('core:payment', payment_option='paypal')
+                elif payment_option == "C":
+                    return redirect('core:payment', payment_option='cheque')
+                elif payment_option == "M":
+                    return redirect('core:payment', payment_option='mpesa')
+                else:
+                    messages.warning(request, "Invalid payment option.")
+                    return redirect('core:checkout')
+        except ObjectDoesNotExist:
+            messages.error(request, "You do not have an active order")
+            return redirect('core:order-summary')
+
+    def get_shipping_address(self, request, form, use_default_shipping):
+        if use_default_shipping:
+            return Address.objects.filter(user=request.user, address_type="S", default=True).first()
+        
+        shipping_address1 = form.cleaned_data.get('shipping_address')
+        shipping_address2 = form.cleaned_data.get('shipping_address2')
+        shipping_country = form.cleaned_data.get('shipping_country')
+        shipping_zip = form.cleaned_data.get('shipping_zip')
+        
+        if all([shipping_address1, shipping_country, shipping_zip]):
+            shipping_address = Address(
+                user=request.user,
+                street_address=shipping_address1,
+                apartment_address=shipping_address2,
+                country=shipping_country,
+                zip=shipping_zip,
+                address_type="S"
+            )
+            shipping_address.save()
+            return shipping_address
+        return None
+
+    def get_billing_address(self, request, form, use_default_billing, same_billing_address, shipping_address):
+        if same_billing_address:
+            billing_address = shipping_address
+            billing_address.pk = None  # Clone the object
+            billing_address.address_type = "B"
+            billing_address.save()
+            return billing_address
+        
+        if use_default_billing:
+            return Address.objects.filter(user=request.user, address_type="B", default=True).first()
+        
+        billing_address1 = form.cleaned_data.get('billing_address')
+        billing_address2 = form.cleaned_data.get('billing_address2')
+        billing_country = form.cleaned_data.get('billing_country')
+        billing_zip = form.cleaned_data.get('billing_zip')
+        
+        if all([billing_address1, billing_country, billing_zip]):
+            billing_address = Address(
+                user=request.user,
+                street_address=billing_address1,
+                apartment_address=billing_address2,
+                country=billing_country,
+                zip=billing_zip,
+                address_type="B"
+            )
+            billing_address.save()
+            return billing_address
+        return None
+
 
     def get(self, request, *args, **kwargs):
         try:

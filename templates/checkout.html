@@ -191,7 +191,8 @@
 					
 					<h3>Payment Option</h3>
 					<div class="payment-method">
-						{% for value, name in form.fields.payment_option.choices %}
+						{% for value, name in form.payment_option.field.choices %}
+
 						<div class="input-radio">
 							<input type="radio" name="payment_option" value="{{value}}" id="{{name}}">
 							<!-- {{form.payment_option}} -->

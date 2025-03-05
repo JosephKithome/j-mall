@@ -1,102 +1,86 @@
 from django import forms
-from django.db.models.fields import CharField, EmailField
-from django.forms import widgets
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
-PAYMENT_CHOICES =(
-    ('S','Stripe'),
-    ('C','Cheque Payment'),
-    ('P','PayPal'),
-    ('M','MPESA')
-    
-)   
+
+PAYMENT_CHOICES = (
+    ('S', 'Stripe'),
+    ('C', 'Cheque Payment'),
+    ('P', 'PayPal'),
+    ('M', 'MPESA')
+)
 
 class CheckoutForm(forms.Form):
-
     shipping_address = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'placeholder': '123 Main St',
-        'class':'input'
+        'class': 'input'
     }))
-    shipping_address2 =forms.CharField(required=False,widget=forms.TextInput(attrs={
+    shipping_address2 = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'placeholder': 'Apartment or Suite',
-        'class':'input'
+        'class': 'input'
     }))
     shipping_country = CountryField(blank_label='(Select Country)').formfield(
         required=False,
-        widget =CountrySelectWidget(attrs={
-            'class':'input',
-            'id':'country'
+        widget=CountrySelectWidget(attrs={
+            'class': 'input',
+            'id': 'country'
         })
     )
-    shipping_zip =forms.CharField(required=False,widget=forms.TextInput(attrs={
-        'placeholder':'Zipcode',
-        'class':'input'
-        
+    shipping_zip = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        'placeholder': 'Zipcode',
+        'class': 'input'
     }))
-    telephone = forms.CharField(required=False,widget=forms.TextInput(attrs={
+    telephone = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'placeholder': '+254717064...',
-        'class':'input'
+        'class': 'input'
     }))
 
-    ##Billing Address
-
+    # Billing Address
     billing_address = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'placeholder': '123 Main St',
-        'class':'input'
+        'class': 'input'
     }))
-    billing_address2 =forms.CharField(required=False,widget=forms.TextInput(attrs={
+    billing_address2 = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'placeholder': 'Apartment or Suite',
-        'class':'input'
+        'class': 'input'
     }))
     billing_country = CountryField(blank_label='(Select Country)').formfield(
         required=False,
-        widget =CountrySelectWidget(attrs={
-            'class':'input',
-            'id':'country'
+        widget=CountrySelectWidget(attrs={
+            'class': 'input',
+            'id': 'country'
         })
     )
-    # billing_zip =forms.CharField(required=False,widget=forms.TextInput(attrs={
-    #     'placeholder':'Zipcode',
-    #     'class':'input'
-        
-    # }))
-    billing_zip = forms.CharField(required=False)
-    telephone = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': '+254717064...',
-        'class':'input'
-    }),required=False)
-    same_billing_address = forms.BooleanField(widget=forms.CheckboxInput(attrs={
-        'class':'custom-control-input'
-    }),required=False)
+    billing_zip = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        'placeholder': 'Zipcode',
+        'class': 'input'
+    }))
+
+    same_billing_address = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
+    set_default_shipping = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
+    set_default_billing = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
+    use_default_shipping = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
+    use_default_billing = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     
-    set_default_shipping = forms.BooleanField(widget=forms.CheckboxInput,required=False)
-    set_default_billing = forms.BooleanField(widget=forms.CheckboxInput,required=False)
-    use_default_shipping = forms.BooleanField(widget=forms.CheckboxInput,required=False)
-    use_default_billing = forms.BooleanField(widget=forms.CheckboxInput,required=False)
-    payment_option = forms.ChoiceField(widget=forms.RadioSelect,choices=PAYMENT_CHOICES)
-    
-    
+    payment_option = forms.ChoiceField(widget=forms.RadioSelect(), choices=PAYMENT_CHOICES)
 
 class CouponForm(forms.Form):
     code = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
         'placeholder': 'Promo code',
-        'aria-label': 'Recipient\'s username',
+        'aria-label': "Recipient's username",
         'aria-describedby': 'basic-addon2'
-    }))    
+    }))
 
 class RefundForm(forms.Form):
-    ref_code = forms.CharField(
-        required=False,widget=forms.TextInput(attrs={
+    ref_code = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'placeholder': 'Reference Code',
-        'class':'input'
+        'class': 'input'
     }))
     message = forms.CharField(widget=forms.Textarea(attrs={
         'class': 'input',
         'placeholder': 'Refund Reason...',
-
     }))
-    email=forms.EmailField(widget=forms.TextInput(attrs={
+    email = forms.EmailField(widget=forms.TextInput(attrs={
         'placeholder': 'Your email Address',
-        'class':'input'
+        'class': 'input'
     }))
